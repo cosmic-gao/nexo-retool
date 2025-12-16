@@ -3,8 +3,8 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  // Always use base path for consistency between dev and prod
-  base: "/modules/settings-app/",
+  // Use basePath from manifest.json for consistency
+  base: "/app/settings/",
   build: {
     outDir: "dist",
     assetsDir: "assets",

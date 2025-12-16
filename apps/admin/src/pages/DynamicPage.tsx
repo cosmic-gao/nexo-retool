@@ -1,10 +1,9 @@
 import { useParams, useLocation } from "react-router-dom";
 import { useRegistry } from "@nexo/core";
 import { Card, CardContent } from "@/components/ui/card";
-import { FileQuestion, Loader2 } from "lucide-react";
+import { FileQuestion } from "lucide-react";
 import { MicroAppContainer } from "@/components/MicroAppContainer";
 
-// API base URL for module assets
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3001";
 
 export function DynamicPage() {
@@ -12,20 +11,7 @@ export function DynamicPage() {
   const location = useLocation();
   const { apps } = useRegistry();
 
-  // Find the module by basePath (e.g., /app/todo matches basePath "/app/todo")
-  const module = apps.find((app) => {
-    const basePath = app.manifest.basePath;
-    // Check if basePath matches /app/{appId}
-    return basePath === `/app/${appId}`;
-  });
-
-  // Debug log
-  console.log("🔍 DynamicPage:", {
-    appId,
-    fullPath: location.pathname,
-    module: module?.manifest.name,
-    totalApps: apps.length,
-  });
+  const module = apps.find((app) => app.manifest.basePath === `/app/${appId}`);
 
   if (!module) {
     return (
@@ -37,9 +23,7 @@ export function DynamicPage() {
             </div>
             <h3 className="mb-2 text-lg font-medium">Module Not Found</h3>
             <p className="text-center text-sm text-muted-foreground">
-              Module{" "}
-              <code className="rounded bg-muted px-2 py-1">{appId}</code> is not
-              registered
+              Module <code className="rounded bg-muted px-2 py-1">{appId}</code> is not registered
             </p>
             <div className="mt-4 text-xs text-muted-foreground">
               <p>Available modules:</p>
@@ -55,22 +39,17 @@ export function DynamicPage() {
     );
   }
 
-  // Construct the wujie app URL using the actual module ID (e.g., "todo-app")
-  // In development, modules run on their own dev servers
-  // In production, they are served from the server
   const moduleId = module.manifest.id;
-  const moduleUrl = `${API_BASE}/modules/${moduleId}/`;
+  const basePath = module.manifest.basePath;
+  const moduleUrl = `${API_BASE}${basePath}/`;
 
   return (
     <div className="h-full w-full">
       <MicroAppContainer
         name={moduleId}
         url={moduleUrl}
-        baseroute={module.manifest.basePath}
-        data={{
-          route: location.pathname,
-          platform: "nexo",
-        }}
+        baseroute={basePath}
+        data={{ route: location.pathname, platform: "nexo" }}
         className="h-full w-full"
       />
     </div>

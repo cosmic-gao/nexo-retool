@@ -1,74 +1,38 @@
 {
-  "$schema": "../../packages/core/nexo.schema.json",
   "id": "settings-app",
   "name": "Settings",
   "version": "1.0.0",
+  "icon": "⚙️",
   "description": "User and system settings management",
-  "author": "User",
-  "icon": "settings",
-  "tags": ["settings", "configuration"],
-  "priority": 100,
-
   "basePath": "/app/settings",
   "framework": "react",
-
-  "assets": {
-    "js": ["dist/index.js"],
-    "css": ["dist/index.css"]
+  "hasBackend": false,
+  "permissions": {
+    "kv": true,
+    "mspbots": [],
+    "http": []
   },
-
-  "library": "SettingsApp",
-
-  "permissions": [
-    {
-      "id": "settings:profile",
-      "name": "Profile Settings",
-      "description": "Manage profile settings"
-    },
-    {
-      "id": "settings:security",
-      "name": "Security Settings",
-      "description": "Manage security settings"
-    }
-  ],
-
   "pages": [
     {
-      "id": "settings-app",
+      "id": "home",
+      "path": "/",
       "label": "Settings",
-      "path": "/app/settings",
       "icon": "settings",
-      "component": "Home",
-      "title": "Settings",
-      "order": 100,
-      "children": [
-        {
-          "id": "settings-profile",
-          "label": "Profile",
-          "path": "/app/settings/profile",
-          "icon": "user",
-          "component": "Profile",
-          "title": "Profile",
-          "permissions": ["settings:profile"]
-        },
-        {
-          "id": "settings-security",
-          "label": "Security",
-          "path": "/app/settings/security",
-          "icon": "shield",
-          "component": "Security",
-          "title": "Security",
-          "permissions": ["settings:security"]
-        }
-      ]
+      "component": "Home"
+    },
+    {
+      "id": "profile",
+      "path": "/profile",
+      "label": "Profile",
+      "icon": "user",
+      "component": "Profile"
+    },
+    {
+      "id": "security",
+      "path": "/security",
+      "label": "Security",
+      "icon": "shield",
+      "component": "Security"
     }
-  ],
-
-  "lifecycle": {
-    "bootstrap": "bootstrap",
-    "mount": "mount",
-    "unmount": "unmount"
-  }
+  ]
 }
-
-

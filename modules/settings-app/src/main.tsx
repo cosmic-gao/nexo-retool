@@ -1,69 +1,45 @@
-import { StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Home, Profile, Security } from "./pages";
 import "./styles/globals.css";
 
-let root: Root | null = null;
+const isInWujie = !!(window as any).__POWERED_BY_WUJIE__;
 
 function App() {
-  const baseroute = window.__MICRO_APP_BASE_ROUTE__ || "/app/settings";
-
   return (
-    <BrowserRouter basename={baseroute}>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/security" element={<Security />} />
-      </Routes>
+    <BrowserRouter>
+      <div className="min-h-screen p-6">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/security" element={<Security />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }
 
-export function mount(container?: HTMLElement) {
-  const targetContainer =
-    container ||
-    document.getElementById("micro-app-root") ||
-    document.getElementById("root");
+let root: Root | null = null;
 
-  if (!targetContainer) {
-    console.error("Settings App: Mount container not found");
-    return;
+function mount() {
+  const container = document.getElementById("root");
+  if (container && !root) {
+    root = createRoot(container);
+    root.render(<App />);
   }
-
-  root = createRoot(targetContainer);
-  root.render(
-    <StrictMode>
-      <App />
-    </StrictMode>
-  );
-
-  console.log("⚙️ Settings App mounted");
 }
 
-export function unmount() {
+function unmount() {
   if (root) {
     root.unmount();
     root = null;
-    console.log("⚙️ Settings App unmounted");
   }
 }
 
-// micro-app lifecycle hooks
-// @ts-ignore
-window.mount = mount;
-// @ts-ignore
-window.unmount = unmount;
-
-// Auto mount
-mount();
-
-declare global {
-  interface Window {
-    __MICRO_APP_BASE_ROUTE__?: string;
-    __MICRO_APP_NAME__?: string;
-    mount?: () => void;
-    unmount?: () => void;
-  }
+if (isInWujie) {
+  (window as any).__WUJIE_MOUNT = mount;
+  (window as any).__WUJIE_UNMOUNT = unmount;
+} else {
+  mount();
 }
-

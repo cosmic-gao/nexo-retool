@@ -24,6 +24,18 @@ export interface PermissionConfig {
   description?: string;
 }
 
+/**
+ * New permission format for manifest.json
+ */
+export interface AppPermissions {
+  /** Key-value storage access */
+  kv?: boolean;
+  /** MSPBots API access */
+  mspbots?: string[];
+  /** HTTP endpoints access */
+  http?: string[];
+}
+
 export interface AppAssets {
   js: string[];
   css?: string[];
@@ -32,19 +44,26 @@ export interface AppAssets {
 export interface ModuleManifest {
   id: string;
   name: string;
-  version: string;
+  version?: string;
   description?: string;
   icon?: string;
   author?: string;
   homepage?: string;
   tags?: string[];
   priority?: number;
-  basePath: string;
+  /** Entry HTML file (new format) */
+  entry?: string;
+  /** Base path for all app routes */
+  basePath?: string;
+  /** Whether the app has backend services */
+  hasBackend?: boolean;
   framework?: "react" | "vue" | "vanilla";
   sandbox?: boolean;
-  assets: AppAssets;
+  /** Compiled assets to load (legacy format) */
+  assets?: AppAssets;
   library?: string;
-  permissions?: PermissionConfig[];
+  /** Permissions (new format: { kv, mspbots, http }) */
+  permissions?: AppPermissions | PermissionConfig[];
   pages?: PageConfig[];
   lifecycle?: {
     bootstrap?: string;
@@ -138,8 +157,9 @@ export class ModuleLoader {
       };
 
       this.modules.set(manifest.id, loadedModule);
+      const versionStr = manifest.version ? ` v${manifest.version}` : "";
       console.log(
-        `  ✅ ${manifest.name} (${manifest.id}) v${manifest.version}${hasDistFiles ? "" : " [no dist]"}`
+        `  ✅ ${manifest.name} (${manifest.id})${versionStr}${hasDistFiles ? "" : " [no dist]"}`
       );
 
       return loadedModule;
@@ -156,6 +176,18 @@ export class ModuleLoader {
     modulePath: string,
     manifest: ModuleManifest
   ): Promise<boolean> {
+    // New format: check entry file
+    if (manifest.entry) {
+      try {
+        const entryPath = join(modulePath, manifest.entry);
+        await stat(entryPath);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    // Legacy format: check assets.js
     if (!manifest.assets?.js?.length) {
       return false;
     }
@@ -189,17 +221,54 @@ export class ModuleLoader {
 
   /**
    * Extract menus from all modules
+   * Each module's pages are prefixed with its basePath
    */
   getAllMenus(): MenuItemConfig[] {
     const menus: MenuItemConfig[] = [];
 
     for (const module of this.getModules()) {
-      if (module.manifest.pages) {
-        menus.push(...this.extractMenusFromPages(module.manifest.pages));
+      if (module.manifest.pages && module.manifest.basePath) {
+        const moduleMenu = this.createModuleMenu(module);
+        if (moduleMenu) {
+          menus.push(moduleMenu);
+        }
       }
     }
 
     return menus.sort((a, b) => (a.order ?? 100) - (b.order ?? 100));
+  }
+
+  /**
+   * Create a menu entry for a module
+   * The module itself becomes a menu item with its pages as children
+   */
+  private createModuleMenu(module: LoadedModule): MenuItemConfig | null {
+    const { manifest } = module;
+    if (!manifest.pages || !manifest.basePath) return null;
+
+    const basePath = manifest.basePath;
+
+    // If module has only one page at root, return it directly
+    if (manifest.pages.length === 1 && manifest.pages[0].path === "/") {
+      const page = manifest.pages[0];
+      return {
+        id: manifest.id,
+        label: page.label || manifest.name,
+        icon: manifest.icon || page.icon,
+        path: basePath,
+        order: manifest.priority,
+      };
+    }
+
+    // Create menu with children
+    return {
+      id: manifest.id,
+      label: manifest.name,
+      icon: manifest.icon,
+      path: basePath,
+      order: manifest.priority,
+      children: this.extractMenusFromPages(manifest.pages, basePath),
+    };
   }
 
   /**
@@ -209,9 +278,13 @@ export class ModuleLoader {
     const routes: RouteConfig[] = [];
 
     for (const module of this.getModules()) {
-      if (module.manifest.pages) {
+      if (module.manifest.pages && module.manifest.basePath) {
         routes.push(
-          ...this.extractRoutesFromPages(module.manifest.pages, module.id)
+          ...this.extractRoutesFromPages(
+            module.manifest.pages,
+            module.id,
+            module.manifest.basePath
+          )
         );
       }
     }
@@ -220,40 +293,50 @@ export class ModuleLoader {
   }
 
   /**
-   * Extract menus from pages config
+   * Extract menus from pages config with basePath prefix
    */
-  private extractMenusFromPages(pages: PageConfig[]): MenuItemConfig[] {
+  private extractMenusFromPages(
+    pages: PageConfig[],
+    basePath: string
+  ): MenuItemConfig[] {
     return pages
       .filter((page) => !page.hidden)
-      .map((page) => ({
-        id: page.id,
-        label: page.label,
-        icon: page.icon,
-        path: page.path,
-        order: page.order,
-        badge: page.badge,
-        permissions: page.permissions,
-        external: page.external,
-        target: page.target,
-        children: page.children
-          ? this.extractMenusFromPages(page.children)
-          : undefined,
-      }));
+      .map((page) => {
+        // Combine basePath with page path
+        const fullPath = this.joinPaths(basePath, page.path);
+        return {
+          id: page.id,
+          label: page.label,
+          icon: page.icon,
+          path: fullPath,
+          order: page.order,
+          badge: page.badge,
+          permissions: page.permissions,
+          external: page.external,
+          target: page.target,
+          children: page.children
+            ? this.extractMenusFromPages(page.children, fullPath)
+            : undefined,
+        };
+      });
   }
 
   /**
-   * Extract routes from pages config
+   * Extract routes from pages config with basePath prefix
    */
   private extractRoutesFromPages(
     pages: PageConfig[],
-    moduleId: string
+    moduleId: string,
+    basePath: string
   ): RouteConfig[] {
     const routes: RouteConfig[] = [];
 
     for (const page of pages) {
+      const fullPath = this.joinPaths(basePath, page.path);
+
       if (page.component) {
         routes.push({
-          path: page.path,
+          path: fullPath,
           component: `${moduleId}:${page.component}`,
           meta: {
             title: page.title || page.label,
@@ -264,11 +347,23 @@ export class ModuleLoader {
       }
 
       if (page.children) {
-        routes.push(...this.extractRoutesFromPages(page.children, moduleId));
+        routes.push(
+          ...this.extractRoutesFromPages(page.children, moduleId, fullPath)
+        );
       }
     }
 
     return routes;
+  }
+
+  /**
+   * Join two paths, handling slashes correctly
+   */
+  private joinPaths(base: string, path: string): string {
+    if (path === "/" || path === "") return base;
+    const normalizedBase = base.endsWith("/") ? base.slice(0, -1) : base;
+    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+    return `${normalizedBase}${normalizedPath}`;
   }
 
   /**

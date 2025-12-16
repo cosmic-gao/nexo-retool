@@ -1,96 +1,31 @@
 {
-  "$schema": "../../packages/core/nexo.schema.json",
   "id": "todo-app",
   "name": "Todo App",
   "version": "1.0.0",
-  "description": "Simple and easy-to-use todo management app",
-  "author": "User",
-  "icon": "list-todo",
-  "tags": ["productivity", "task-management"],
-  "priority": 10,
-
+  "icon": "📝",
+  "description": "Simple and easy-to-use task management app",
   "basePath": "/app/todo",
   "framework": "react",
-
-  "assets": {
-    "js": ["dist/index.js"],
-    "css": ["dist/index.css"]
+  "hasBackend": false,
+  "permissions": {
+    "kv": true,
+    "mspbots": [],
+    "http": []
   },
-
-  "library": "TodoApp",
-
-  "permissions": [
-    {
-      "id": "todo:read",
-      "name": "View Todos",
-      "description": "View todo list"
-    },
-    {
-      "id": "todo:write",
-      "name": "Edit Todos",
-      "description": "Create, edit, delete todos"
-    },
-    {
-      "id": "todo:admin",
-      "name": "Manage Todos",
-      "description": "Manage all users' todos"
-    }
-  ],
-
   "pages": [
     {
-      "id": "todo-app",
-      "label": "Todo App",
-      "path": "/app/todo",
-      "icon": "list-todo",
-      "component": "Home",
-      "title": "Todo App",
-      "order": 10,
-      "children": [
-        {
-          "id": "todo-list",
-          "label": "Task List",
-          "path": "/app/todo/list",
-          "icon": "check-square",
-          "component": "List",
-          "title": "Task List",
-          "permissions": ["todo:read"]
-        },
-        {
-          "id": "todo-calendar",
-          "label": "Calendar View",
-          "path": "/app/todo/calendar",
-          "icon": "calendar",
-          "component": "Calendar",
-          "title": "Calendar View",
-          "permissions": ["todo:read"]
-        },
-        {
-          "id": "todo-stats",
-          "label": "Statistics",
-          "path": "/app/todo/stats",
-          "icon": "bar-chart-3",
-          "component": "Stats",
-          "title": "Statistics"
-        },
-        {
-          "id": "todo-settings",
-          "label": "Settings",
-          "path": "/app/todo/settings",
-          "icon": "settings",
-          "component": "Settings",
-          "title": "Settings",
-          "permissions": ["todo:admin"]
-        }
-      ]
+      "id": "home",
+      "path": "/",
+      "label": "Home",
+      "icon": "home",
+      "component": "Home"
+    },
+    {
+      "id": "list",
+      "path": "/list",
+      "label": "Task List",
+      "icon": "list",
+      "component": "List"
     }
-  ],
-
-  "lifecycle": {
-    "bootstrap": "bootstrap",
-    "mount": "mount",
-    "unmount": "unmount"
-  }
+  ]
 }
-
-

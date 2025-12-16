@@ -1,34 +1,19 @@
-import {
-  getRegistry,
-  getPermissionManager,
-  setIconResolver,
-  type MenuItemConfig,
-} from "@nexo/core";
+import { getRegistry, getPermissionManager, setIconResolver, type MenuItemConfig } from "@nexo/core";
 import * as LucideIcons from "lucide-react";
 import { createElement } from "react";
 import { setupApp } from "wujie";
 
 window.__NEXO_PLATFORM__ = true;
 
-// Configure wujie default settings
-setupApp({
-  name: "default",
-  // Allow all origins for development
-  // In production, restrict to specific origins
-});
+setupApp({ name: "default" });
 
-// API base URL
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3001";
 
-/**
- * Convert icon name to React element
- */
 function createIconElement(iconName: string) {
   const pascalCase = iconName
     .split("-")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join("");
-
   const IconComponent = (LucideIcons as any)[pascalCase];
   if (IconComponent) {
     return createElement(IconComponent, { className: "h-4 w-4" });
@@ -43,8 +28,12 @@ function setupIconResolver() {
 interface ModuleInfo {
   id: string;
   name: string;
-  version: string;
+  version?: string;
+  icon?: string;
+  description?: string;
   basePath: string;
+  framework?: string;
+  hasBackend?: boolean;
   hasDistFiles: boolean;
 }
 
@@ -66,9 +55,6 @@ interface PlatformConfig {
   menus: ServerMenuConfig[];
 }
 
-/**
- * Fetch platform configuration from server
- */
 async function fetchPlatformConfig(): Promise<PlatformConfig> {
   const response = await fetch(`${API_BASE}/api/platform/config`);
   if (!response.ok) {
@@ -78,15 +64,16 @@ async function fetchPlatformConfig(): Promise<PlatformConfig> {
   return result.data;
 }
 
-/**
- * Transform server menus to client menus with icon elements
- */
+function isEmoji(str: string): boolean {
+  return /\p{Emoji}/u.test(str) && str.length <= 4;
+}
+
 function transformMenus(menus: ServerMenuConfig[]): MenuItemConfig[] {
   return menus.map((menu) => ({
     id: menu.id,
     label: menu.label,
     path: menu.path,
-    icon: menu.icon ? createIconElement(menu.icon) : undefined,
+    icon: menu.icon ? (isEmoji(menu.icon) ? menu.icon : createIconElement(menu.icon)) : undefined,
     order: menu.order,
     badge: menu.badge,
     permissions: menu.permissions,
@@ -97,8 +84,6 @@ function transformMenus(menus: ServerMenuConfig[]): MenuItemConfig[] {
 }
 
 export async function bootstrap() {
-  console.log("🚀 Nexo Platform starting...");
-
   setupIconResolver();
 
   const registry = getRegistry();
@@ -128,42 +113,26 @@ export async function bootstrap() {
   });
 
   try {
-    // Fetch platform configuration from server
-    console.log("📡 Fetching platform config from server...");
     const config = await fetchPlatformConfig();
 
-    console.log(`📦 Found ${config.modules.length} modules`);
-
-    // Register each module (menus only, views are loaded via wujie)
     for (const module of config.modules) {
-      // Get menus for this module
-      const moduleMenus = config.menus.filter((m) =>
-        m.path.startsWith(module.basePath)
-      );
-
-      // Register the module with menus (no routes needed, wujie handles views)
+      const moduleMenu = config.menus.find((m) => m.id === module.id);
       await registry.register({
         id: module.id,
         name: module.name,
         version: module.version,
+        description: module.description,
+        icon: module.icon,
         basePath: module.basePath,
-        menus: transformMenus(moduleMenus),
-        routes: [], // Routes handled by wujie
+        menus: moduleMenu ? transformMenus([moduleMenu]) : [],
+        routes: [],
       });
-
-      console.log(`  ✅ ${module.name} (${module.id}) - ${moduleMenus.length} menus`);
     }
-
-    const loadedApps = registry.getLoadedApps();
-    console.log(`\n✅ Registered ${loadedApps.length} modules`);
   } catch (error) {
-    console.error("❌ Failed to load platform config:", error);
+    console.error("Failed to load platform config:", error);
   }
 
-  return {
-    registry,
-    permissionManager,
-  };
+  return { registry, permissionManager };
 }
 
 declare global {

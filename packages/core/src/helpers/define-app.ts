@@ -52,12 +52,16 @@ export function createAppBuilder(id: string) {
       manifest.routes = routes;
       return builder;
     },
-    setup(fn: AppManifest["setup"]) {
-      manifest.setup = fn;
+    bootstrap(fn: AppManifest["bootstrap"]) {
+      manifest.bootstrap = fn;
       return builder;
     },
-    teardown(fn: AppManifest["teardown"]) {
-      manifest.teardown = fn;
+    mount(fn: AppManifest["mount"]) {
+      manifest.mount = fn;
+      return builder;
+    },
+    unmount(fn: AppManifest["unmount"]) {
+      manifest.unmount = fn;
       return builder;
     },
     tags(tags: string[]) {
@@ -67,9 +71,6 @@ export function createAppBuilder(id: string) {
     build(): AppManifest {
       if (!manifest.name) {
         throw new Error("App name is required");
-      }
-      if (!manifest.version) {
-        throw new Error("App version is required");
       }
       return manifest as AppManifest;
     },

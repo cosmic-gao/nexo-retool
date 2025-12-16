@@ -55,36 +55,30 @@ app.get("/health", (c) => {
 app.route("/api/modules", createModulesRouter(moduleLoader));
 app.route("/api/platform", createPlatformRouter(moduleLoader));
 
-// Serve module files
-// In development: proxy to module dev servers
-// In production: serve from dist folder
-app.all("/modules/:moduleId/*", async (c) => {
-  const moduleId = c.req.param("moduleId");
-  // Keep the full path including /modules/moduleId/ for dev server proxy
-  const fullRequestPath = c.req.path;
-  const filePath = c.req.path.replace(`/modules/${moduleId}/`, "") || "index.html";
-
-  const module = moduleLoader.getModule(moduleId);
-  if (!module) {
-    return c.json({ error: "Module not found" }, 404);
-  }
-
+// Helper function to serve module files
+async function serveModuleFile(
+  c: any,
+  module: any,
+  moduleId: string,
+  filePath: string,
+  basePath: string
+) {
   // Development mode: proxy to module dev server
   if (IS_DEV && DEV_PORTS[moduleId]) {
     const devPort = DEV_PORTS[moduleId];
-    // Proxy the full path since dev server uses base: "/modules/todo-app/"
-    const proxyUrl = `http://localhost:${devPort}${fullRequestPath}`;
-    
+    // Proxy using basePath
+    const proxyUrl = `http://localhost:${devPort}${basePath}/${filePath}`.replace(/\/+/g, "/");
+
     try {
       const response = await fetch(proxyUrl, {
         method: c.req.method,
         headers: c.req.raw.headers,
       });
-      
+
       // Clone response with CORS headers
       const headers = new Headers(response.headers);
       headers.set("Access-Control-Allow-Origin", "*");
-      
+
       return new Response(response.body, {
         status: response.status,
         headers,
@@ -130,6 +124,48 @@ app.all("/modules/:moduleId/*", async (c) => {
     console.error(`Failed to serve file: ${fullPath}`, error);
   }
 
+  return null;
+}
+
+// Mount user apps at their basePath
+// Each module is served at its configured basePath (e.g., /app/todo, /app/settings)
+for (const module of moduleLoader.getModules()) {
+  const basePath = module.manifest.basePath;
+  if (!basePath) continue;
+
+  // Handle all requests under basePath
+  app.all(`${basePath}/*`, async (c) => {
+    const filePath = c.req.path.replace(basePath, "").replace(/^\//, "") || "index.html";
+    
+    const result = await serveModuleFile(c, module, module.id, filePath, basePath);
+    if (result) return result;
+
+    return c.json({ error: "File not found", path: filePath }, 404);
+  });
+
+  // Handle exact basePath request (serve index.html)
+  app.all(basePath, async (c) => {
+    const result = await serveModuleFile(c, module, module.id, "index.html", basePath);
+    if (result) return result;
+
+    return c.json({ error: "File not found", path: "index.html" }, 404);
+  });
+}
+
+// Legacy: also serve at /modules/:moduleId/* for backward compatibility
+app.all("/modules/:moduleId/*", async (c) => {
+  const moduleId = c.req.param("moduleId");
+  const filePath = c.req.path.replace(`/modules/${moduleId}/`, "") || "index.html";
+
+  const module = moduleLoader.getModule(moduleId);
+  if (!module) {
+    return c.json({ error: "Module not found" }, 404);
+  }
+
+  const basePath = module.manifest.basePath || `/modules/${moduleId}`;
+  const result = await serveModuleFile(c, module, moduleId, filePath, basePath);
+  if (result) return result;
+
   return c.json({ error: "File not found", path: filePath }, 404);
 });
 
@@ -143,7 +179,14 @@ console.log(`   POST /api/modules/reload  - Reload modules`);
 console.log(`   GET  /api/platform/menus  - Get all menus`);
 console.log(`   GET  /api/platform/routes - Get all routes`);
 console.log(`   GET  /api/platform/config - Get full platform config`);
-console.log(`   GET  /modules/:id/*       - Serve module files (proxy in dev)`);
+
+console.log(`\n📦 User Apps (mounted at basePath):`);
+for (const module of moduleLoader.getModules()) {
+  const basePath = module.manifest.basePath;
+  if (basePath) {
+    console.log(`   ${module.manifest.name} -> ${basePath}`);
+  }
+}
 
 if (IS_DEV) {
   console.log(`\n🔧 Development mode - Module dev servers:`);

@@ -73,6 +73,18 @@ export interface PermissionConfig {
   description?: string;
 }
 
+/**
+ * New permission format for manifest.json
+ */
+export interface AppPermissions {
+  /** Key-value storage access */
+  kv?: boolean;
+  /** MSPBots API access */
+  mspbots?: string[];
+  /** HTTP endpoints access */
+  http?: string[];
+}
+
 export interface AppAssets {
   /** JS files to load (relative to app directory) */
   js: string[];
@@ -87,23 +99,29 @@ export interface AppAssets {
 export interface AppManifestConfig {
   id: string;
   name: string;
-  version: string;
+  version?: string;
   description?: string;
   icon?: string;
   author?: string;
   homepage?: string;
 
-  /** Base path for all app routes */
-  basePath: string;
+  /** Entry HTML file (new format) */
+  entry?: string;
 
-  /** Compiled assets to load */
-  assets: AppAssets;
+  /** Base path for all app routes */
+  basePath?: string;
+
+  /** Whether the app has backend services */
+  hasBackend?: boolean;
+
+  /** Compiled assets to load (legacy format) */
+  assets?: AppAssets;
 
   /** Pages - combines menus and routes into one unified structure */
   pages?: PageConfig[];
 
-  /** Permissions defined by this app */
-  permissions?: PermissionConfig[];
+  /** Permissions (new format: { kv, mspbots, http }) */
+  permissions?: AppPermissions | PermissionConfig[];
 
   tags?: string[];
   priority?: number;
@@ -131,14 +149,16 @@ export interface AppManifestConfig {
 export interface AppManifest {
   id: string;
   name: string;
-  version: string;
+  version?: string;
   description?: string;
   icon?: ReactNode;
   author?: string;
-  basePath: string;
+  basePath?: string;
+  entry?: string;
+  hasBackend?: boolean;
   menus: MenuItemConfig[];
   routes: RouteConfig[];
-  permissions?: PermissionConfig[];
+  permissions?: AppPermissions | PermissionConfig[];
   tags?: string[];
   priority?: number;
   framework?: "react" | "vue" | "vanilla";

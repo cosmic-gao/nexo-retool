@@ -1,5 +1,6 @@
 import type {
   AppManifest,
+  AppManifestConfig,
   AppLoader,
   RegisteredApp,
   MenuItemConfig,
@@ -82,10 +83,7 @@ export class AppRegistry {
     this.validateManifest(manifest);
 
     if (this.apps.has(manifest.id)) {
-      const existing = this.apps.get(manifest.id)!;
-      if (existing.status === "loaded") {
-        console.warn(`App "${manifest.id}" already registered, will be overwritten`);
-      }
+      return;
     }
 
     const registeredApp: RegisteredApp = {
@@ -131,7 +129,8 @@ export class AppRegistry {
     try {
       const module = await loader();
       const manifest = "default" in module ? module.default : module;
-      await this.register(manifest);
+      // Ensure manifest has required AppManifest properties
+      await this.register(manifest as AppManifest);
       this.emit("app:loaded", { appId });
     } catch (error) {
       if (existingApp) {
@@ -224,7 +223,10 @@ export class AppRegistry {
 
     for (const app of this.apps.values()) {
       if (app.status === "loaded" && app.manifest.permissions) {
-        allPermissions.push(...app.manifest.permissions);
+        // Only collect if it's the legacy PermissionConfig[] format
+        if (Array.isArray(app.manifest.permissions)) {
+          allPermissions.push(...app.manifest.permissions);
+        }
       }
     }
 
@@ -279,9 +281,6 @@ export class AppRegistry {
     }
     if (!manifest.name) {
       throw new Error("App manifest missing name");
-    }
-    if (!manifest.version) {
-      throw new Error("App manifest missing version");
     }
     if (!Array.isArray(manifest.menus)) {
       throw new Error("App manifest missing menus array");

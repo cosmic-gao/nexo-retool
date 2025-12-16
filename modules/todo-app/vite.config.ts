@@ -4,8 +4,8 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  // Always use base path for consistency between dev and prod
-  base: "/modules/todo-app/",
+  // Use basePath from manifest.json for consistency
+  base: "/app/todo/",
   build: {
     outDir: "dist",
     assetsDir: "assets",

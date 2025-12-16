@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Routes, Route } from "react-router-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { MainLayout } from "./layouts/MainLayout";
@@ -9,16 +9,15 @@ import { bootstrap } from "./bootstrap";
 
 export function App() {
   const [isReady, setIsReady] = useState(false);
+  const bootstrapRef = useRef(false);
 
   useEffect(() => {
+    if (bootstrapRef.current) return;
+    bootstrapRef.current = true;
+
     bootstrap()
-      .then(() => {
-        setIsReady(true);
-      })
-      .catch((error) => {
-        console.error("Platform initialization failed:", error);
-        setIsReady(true);
-      });
+      .then(() => setIsReady(true))
+      .catch(() => setIsReady(true));
   }, []);
 
   if (!isReady) {

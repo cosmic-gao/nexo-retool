@@ -8,7 +8,7 @@ import type {
 } from "../types/app";
 import { getRegistry } from "./app-registry";
 import type { ComponentType } from "react";
-import { createElement } from "react";
+import { createElement, lazy } from "react";
 
 type IconResolver = (iconName: string) => React.ReactNode;
 
@@ -232,6 +232,8 @@ export function transformManifest(
     icon: resolveIcon(config.icon),
     author: config.author,
     basePath: config.basePath,
+    entry: config.entry,
+    hasBackend: config.hasBackend,
     menus,
     routes,
     permissions: config.permissions,
@@ -434,7 +436,6 @@ function transformManifestWithComponents(
     });
 
     if (loaderKey && componentLoaders[loaderKey]) {
-      const { lazy } = require("react");
       return lazy(componentLoaders[loaderKey]);
     }
 
@@ -480,6 +481,8 @@ function transformManifestWithComponents(
     icon: resolveIcon(config.icon),
     author: config.author,
     basePath: config.basePath,
+    entry: config.entry,
+    hasBackend: config.hasBackend,
     menus,
     routes,
     permissions: config.permissions,

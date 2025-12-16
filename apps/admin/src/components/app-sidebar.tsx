@@ -69,11 +69,17 @@ const platformMenus = [
   { id: "apps", title: "Apps", url: "/apps", icon: LayoutGrid },
 ]
 
-// Render icon - handles both React nodes and null
+// Render icon - handles React nodes, strings (emoji), and null
 function renderIcon(icon: React.ReactNode): React.ReactNode {
+  // Handle emoji strings
+  if (typeof icon === "string") {
+    return <span className="text-base">{icon}</span>
+  }
+  // Handle React elements (lucide icons)
   if (React.isValidElement(icon)) {
     return icon
   }
+  // Fallback
   return <Folder className="h-4 w-4" />
 }
 
@@ -140,11 +146,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { menus } = useRegistry()
   const location = useLocation()
   const navigate = useNavigate()
-
-  // Debug: log menus
-  React.useEffect(() => {
-    console.log("📋 Sidebar menus from registry:", menus)
-  }, [menus])
 
   return (
     <Sidebar collapsible="icon" {...props}>
