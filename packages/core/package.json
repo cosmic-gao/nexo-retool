@@ -1,5 +1,5 @@
 {
-  "name": "@nexoc/core",
+  "name": "nexoc-core",
   "version": "1.0.0",
   "description": "Core utilities and types for Nexo platform - app registry, standalone mode, and type definitions",
   "type": "module",
@@ -30,7 +30,7 @@
     "prepublishOnly": "pnpm build"
   },
   "keywords": [
-    "nexo",
+    "nexoc",
     "core",
     "micro-frontend",
     "app-registry",
