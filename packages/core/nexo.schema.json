@@ -1,0 +1,208 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Nexo App Manifest",
+  "description": "Nexo 平台 APP 配置文件规范",
+  "type": "object",
+  "required": ["id", "name", "version"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema 引用"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "APP 唯一标识符，小写字母、数字和连字符"
+    },
+    "name": {
+      "type": "string",
+      "description": "APP 显示名称"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+",
+      "description": "APP 版本号，遵循语义化版本"
+    },
+    "description": {
+      "type": "string",
+      "description": "APP 描述"
+    },
+    "author": {
+      "type": "string",
+      "description": "APP 作者"
+    },
+    "icon": {
+      "type": "string",
+      "description": "APP 图标，使用 Lucide 图标名称"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "APP 标签"
+    },
+    "priority": {
+      "type": "number",
+      "default": 0,
+      "description": "排序优先级，数字越小越靠前"
+    },
+    "basePath": {
+      "type": "string",
+      "pattern": "^/",
+      "description": "APP 基础路径，必须以 / 开头"
+    },
+    "framework": {
+      "type": "string",
+      "enum": ["react", "vue", "vanilla"],
+      "description": "APP 使用的框架"
+    },
+    "entry": {
+      "type": "string",
+      "description": "APP 入口文件路径"
+    },
+    "assets": {
+      "type": "object",
+      "properties": {
+        "js": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "JavaScript 资源文件"
+        },
+        "css": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "CSS 样式文件"
+        }
+      },
+      "description": "APP 静态资源"
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Permission"
+      },
+      "description": "APP 权限声明"
+    },
+    "menus": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/MenuItem"
+      },
+      "description": "APP 菜单配置"
+    },
+    "routes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Route"
+      },
+      "description": "APP 路由配置"
+    },
+    "lifecycle": {
+      "type": "object",
+      "properties": {
+        "bootstrap": {
+          "type": "string",
+          "description": "初始化脚本路径"
+        },
+        "mount": {
+          "type": "string",
+          "description": "挂载脚本路径"
+        },
+        "unmount": {
+          "type": "string",
+          "description": "卸载脚本路径"
+        }
+      },
+      "description": "APP 生命周期钩子"
+    }
+  },
+  "definitions": {
+    "Permission": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "权限唯一标识"
+        },
+        "name": {
+          "type": "string",
+          "description": "权限显示名称"
+        },
+        "description": {
+          "type": "string",
+          "description": "权限描述"
+        }
+      }
+    },
+    "MenuItem": {
+      "type": "object",
+      "required": ["id", "label"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "菜单项唯一标识"
+        },
+        "label": {
+          "type": "string",
+          "description": "菜单项显示文本"
+        },
+        "path": {
+          "type": "string",
+          "description": "菜单项路由路径"
+        },
+        "icon": {
+          "type": "string",
+          "description": "菜单项图标"
+        },
+        "order": {
+          "type": "number",
+          "description": "排序顺序"
+        },
+        "badge": {
+          "type": "string",
+          "description": "菜单项徽章文本"
+        },
+        "permissions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "访问该菜单需要的权限"
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/MenuItem" },
+          "description": "子菜单项"
+        }
+      }
+    },
+    "Route": {
+      "type": "object",
+      "required": ["path"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "路由路径"
+        },
+        "entry": {
+          "type": "string",
+          "description": "路由组件入口文件"
+        },
+        "meta": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "页面标题"
+            },
+            "permissions": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "访问该路由需要的权限"
+            }
+          },
+          "description": "路由元信息"
+        }
+      }
+    }
+  }
+}
+

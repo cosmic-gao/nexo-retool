@@ -1,0 +1,18 @@
+{
+  "name": "nexo-retool",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A platform for app registration and menu management",
+  "scripts": {
+    "dev": "pnpm -r --parallel run dev",
+    "dev:web": "pnpm --filter @nexo/web dev",
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@9.15.0"
+}
+
