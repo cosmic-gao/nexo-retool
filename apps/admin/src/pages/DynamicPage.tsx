@@ -1,5 +1,5 @@
 import { useParams, useLocation } from "react-router-dom";
-import { useRegistry } from "@nexo/core";
+import { useRegistry } from "@nexoc/core";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileQuestion } from "lucide-react";
 import { MicroAppContainer } from "@/components/MicroAppContainer";

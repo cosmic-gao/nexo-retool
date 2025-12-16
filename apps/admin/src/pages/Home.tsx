@@ -1,4 +1,4 @@
-import { useRegistry, usePermission } from "@nexo/core";
+import { useRegistry, usePermission } from "@nexoc/core";
 import { Card } from "@/components/ui/card";
 import {
   TrendingUp,

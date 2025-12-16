@@ -1,4 +1,4 @@
-import { getRegistry, getPermissionManager, setIconResolver, type MenuItemConfig } from "@nexo/core";
+import { getRegistry, getPermissionManager, setIconResolver, type MenuItemConfig } from "@nexoc/core";
 import * as LucideIcons from "lucide-react";
 import { createElement } from "react";
 import { setupApp } from "wujie";

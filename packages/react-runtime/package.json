@@ -1,5 +1,5 @@
 {
-  "name": "@nexo/react-runtime",
+  "name": "@nexoc/react-runtime",
   "version": "1.0.0",
   "description": "React runtime for Nexo platform - provides bootstrap, UI components, and CLI tools",
   "type": "module",
@@ -72,6 +72,6 @@
     "react-router-dom": "^6.0.0 || ^7.0.0"
   },
   "optionalDependencies": {
-    "@nexo/core": "workspace:*"
+    "@nexoc/core": "workspace:*"
   }
 }

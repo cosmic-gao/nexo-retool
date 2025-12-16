@@ -1,7 +1,7 @@
 import { createRoot, Root } from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, Outlet } from "react-router-dom";
 import { useEffect } from "react";
-import { type AppManifestConfig } from "@nexo/core";
+import { type AppManifestConfig } from "@nexoc/core";
 import { AppSidebar } from "./components/app-sidebar";
 import {
   SidebarInset,

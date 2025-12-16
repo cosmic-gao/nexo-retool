@@ -12,7 +12,7 @@ import {
   ChevronRight,
   type LucideIcon,
 } from "lucide-react"
-import { useRegistry, type MenuItemConfig } from "@nexo/core"
+import { useRegistry, type MenuItemConfig } from "@nexoc/core"
 
 import { NavUser } from "@/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"

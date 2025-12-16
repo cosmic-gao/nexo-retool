@@ -27,7 +27,7 @@
     "vite": "^6.3.5"
   },
   "peerDependencies": {
-    "@nexo/core": "workspace:*",
-    "@nexo/react-runtime": "workspace:*"
+    "@nexoc/core": "workspace:*",
+    "@nexoc/react-runtime": "workspace:*"
   }
 }

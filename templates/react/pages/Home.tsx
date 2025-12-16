@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Button, Input } from "@nexo/react-runtime"
+import { Button, Input } from "@nexoc/react-runtime"
 import { Plus, CheckCircle2, Circle, Trash2, ListTodo } from "lucide-react"
 
 interface Todo {

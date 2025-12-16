@@ -5,8 +5,8 @@
   "description": "A platform for app registration and menu management",
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
-    "dev:admin": "pnpm --filter @nexo/admin dev",
-    "dev:server": "pnpm --filter @nexo/server dev",
+    "dev:admin": "pnpm --filter @nexoc/admin dev",
+    "dev:server": "pnpm --filter @nexoc/server dev",
     "dev:all": "concurrently \"pnpm dev:server\" \"pnpm dev:admin\"",
     "build": "pnpm -r run build",
     "lint": "pnpm -r run lint"

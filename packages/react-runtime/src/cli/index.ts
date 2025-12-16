@@ -48,10 +48,10 @@ function generateIndexHtml(manifest: Manifest, cwd: string): string {
 function generateMainTsx(cwd: string): string {
   const cwdPosix = cwd.replace(/\\/g, "/");
   // Use absolute path for styles.css since we're in node_modules/.nexo-cache
-  const stylesPath = `${cwdPosix}/node_modules/@nexo/react-runtime/dist/styles/globals.css`;
-  return `import { bootstrap } from "@nexo/react-runtime";
+  const stylesPath = `${cwdPosix}/node_modules/@nexoc/react-runtime/dist/styles/globals.css`;
+  return `import { bootstrap } from "@nexoc/react-runtime";
 import "${stylesPath}";
-import { type AppManifestConfig } from "@nexo/core";
+import { type AppManifestConfig } from "@nexoc/core";
 import * as pages from "${cwdPosix}/pages";
 import manifestJson from "${cwdPosix}/manifest.json";
 
@@ -102,7 +102,7 @@ export default {
   darkMode: ["class"],
   content: [
     "${cwdPosix}/pages/**/*.{ts,tsx}",
-    "${cwdPosix}/node_modules/@nexo/react-runtime/src/**/*.{ts,tsx}",
+    "${cwdPosix}/node_modules/@nexoc/react-runtime/src/**/*.{ts,tsx}",
   ],
   theme: {
     extend: {

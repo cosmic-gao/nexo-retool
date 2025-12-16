@@ -14,7 +14,7 @@ importers:
 
   apps/admin:
     dependencies:
-      '@nexo/core':
+      '@nexoc/core':
         specifier: workspace:*
         version: link:../../packages/core
       '@radix-ui/react-avatar':
@@ -223,7 +223,7 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.19)
     optionalDependencies:
-      '@nexo/core':
+      '@nexoc/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -260,10 +260,10 @@ importers:
 
   templates/react:
     dependencies:
-      '@nexo/core':
+      '@nexoc/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@nexo/react-runtime':
+      '@nexoc/react-runtime':
         specifier: workspace:*
         version: link:../../packages/react-runtime
       lucide-react:

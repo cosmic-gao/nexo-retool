@@ -6,7 +6,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@nexo/react-runtime"
+} from "@nexoc/react-runtime"
 import { MoreHorizontal, CheckCircle2, Clock, AlertCircle } from "lucide-react"
 
 const tasks = [

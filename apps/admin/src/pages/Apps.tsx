@@ -1,4 +1,4 @@
-import { useRegistry } from "@nexo/core";
+import { useRegistry } from "@nexoc/core";
 import {
   Boxes,
   Plus,
