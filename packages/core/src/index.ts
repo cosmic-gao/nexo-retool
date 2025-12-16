@@ -14,6 +14,7 @@ export type {
   PermissionConfig,
   UserInfo,
   PermissionContext,
+  StandaloneOptions,
 } from "./types/app";
 
 // Registry
@@ -45,3 +46,16 @@ export {
 
 // Helpers
 export { defineApp, createAppBuilder } from "./helpers/define-app";
+
+// Standalone - Full admin-like experience for user apps
+export {
+  StandaloneProvider,
+  StandaloneSidebar,
+  StandaloneLayout,
+  createStandaloneApp,
+  withStandalone,
+  useStandalone,
+  useStandaloneSafe,
+  type StandaloneConfig,
+  type StandaloneAppOptions,
+} from "./standalone";

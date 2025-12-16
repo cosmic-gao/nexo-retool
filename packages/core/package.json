@@ -14,6 +14,10 @@
     "./registry": {
       "import": "./src/registry/index.ts",
       "types": "./src/registry/index.ts"
+    },
+    "./standalone": {
+      "import": "./src/standalone/index.ts",
+      "types": "./src/standalone/index.ts"
     }
   },
   "scripts": {
@@ -23,10 +27,13 @@
   },
   "devDependencies": {
     "@types/react": "^19.1.6",
+    "react-router-dom": "^7.0.0",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   },
   "peerDependencies": {
-    "react": "^18.0.0 || ^19.0.0"
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "react-router-dom": "^6.0.0 || ^7.0.0"
   }
 }

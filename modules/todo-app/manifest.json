@@ -27,5 +27,11 @@
       "icon": "list",
       "component": "List"
     }
-  ]
+  ],
+  "standalone": {
+    "enabled": true,
+    "platformName": "Todo Platform",
+    "defaultSidebarOpen": true,
+    "showBreadcrumb": true
+  }
 }

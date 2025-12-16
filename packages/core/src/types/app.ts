@@ -85,6 +85,23 @@ export interface AppPermissions {
   http?: string[];
 }
 
+/**
+ * Standalone mode configuration
+ * When enabled, the app can run independently with full admin-like features
+ */
+export interface StandaloneOptions {
+  /** Enable standalone mode */
+  enabled: boolean;
+  /** Platform name shown in sidebar header */
+  platformName?: string;
+  /** Default sidebar state */
+  defaultSidebarOpen?: boolean;
+  /** Show breadcrumb navigation */
+  showBreadcrumb?: boolean;
+  /** Custom theme (reserved for future use) */
+  theme?: "light" | "dark" | "system";
+}
+
 export interface AppAssets {
   /** JS files to load (relative to app directory) */
   js: string[];
@@ -141,6 +158,13 @@ export interface AppManifestConfig {
     mount?: string;
     unmount?: string;
   };
+
+  /**
+   * Standalone mode configuration
+   * When enabled, the app can run independently with full admin-like features
+   * including sidebar, layout, routing, and menu system
+   */
+  standalone?: StandaloneOptions;
 }
 
 /**
