@@ -10,12 +10,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "strict": true,
-    "types": ["node"],
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "types": ["node"]
   },
-  "include": ["src/**/*", "manifest.json", "*.config.ts"],
+  "include": ["pages/**/*", "manifest.json"],
   "exclude": ["node_modules", "dist"]
 }
