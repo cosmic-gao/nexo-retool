@@ -1,13 +1,37 @@
 import { createRoot, Root } from "react-dom/client";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { Home, Profile, Security } from "./pages";
 import "./styles/globals.css";
 
 const isInWujie = !!(window as any).__POWERED_BY_WUJIE__;
 
+function RouteSync() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isInWujie) return;
+
+    const wujie = (window as any).$wujie;
+    if (!wujie?.bus) return;
+
+    const handleRouteChange = (data: { path: string }) => {
+      if (data.path) {
+        navigate(data.path);
+      }
+    };
+
+    wujie.bus.$on("settings-app-route-change", handleRouteChange);
+    return () => wujie.bus.$off("settings-app-route-change", handleRouteChange);
+  }, [navigate]);
+
+  return null;
+}
+
 function App() {
   return (
     <BrowserRouter>
+      <RouteSync />
       <div className="min-h-screen p-6">
         <Routes>
           <Route path="/" element={<Home />} />
