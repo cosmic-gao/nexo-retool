@@ -1,9 +1,5 @@
 import type { AppManifest } from "../types/app";
 
-/**
- * 定义 APP 的辅助函数
- * 提供类型提示和默认值
- */
 export function defineApp(manifest: AppManifest): AppManifest {
   return {
     ...manifest,
@@ -12,10 +8,6 @@ export function defineApp(manifest: AppManifest): AppManifest {
   };
 }
 
-/**
- * 创建 APP 构建器
- * 链式调用方式定义 APP
- */
 export function createAppBuilder(id: string) {
   const manifest: Partial<AppManifest> = {
     id,
@@ -74,10 +66,10 @@ export function createAppBuilder(id: string) {
     },
     build(): AppManifest {
       if (!manifest.name) {
-        throw new Error("APP name is required");
+        throw new Error("App name is required");
       }
       if (!manifest.version) {
-        throw new Error("APP version is required");
+        throw new Error("App version is required");
       }
       return manifest as AppManifest;
     },
@@ -85,4 +77,3 @@ export function createAppBuilder(id: string) {
 
   return builder;
 }
-

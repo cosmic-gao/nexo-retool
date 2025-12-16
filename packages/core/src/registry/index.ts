@@ -1,12 +1,15 @@
 export { AppRegistry, getRegistry } from "./app-registry";
 export { PermissionManager, getPermissionManager } from "./permission-manager";
 export {
-  createAppLoader,
+  // Dist app loader (for production)
+  createDistAppLoader,
+  loadAppAssets,
+  unloadAssets,
+  // Vite app loader (for development)
   createViteAppLoader,
+  // Common functions
   registerApp,
   registerAppFromConfig,
-  registerApps,
   setIconResolver,
   transformManifest,
-  type AppLoaderConfig,
 } from "./app-loader";

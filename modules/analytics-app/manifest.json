@@ -1,0 +1,88 @@
+{
+  "$schema": "../../packages/core/nexo.schema.json",
+  "id": "analytics-app",
+  "name": "Analytics Dashboard",
+  "version": "1.0.0",
+  "description": "Data analytics and reporting dashboard",
+  "author": "User",
+  "icon": "bar-chart-2",
+  "tags": ["analytics", "reporting", "dashboard"],
+  "priority": 20,
+
+  "basePath": "/app/analytics",
+  "framework": "react",
+
+  "assets": {
+    "js": ["dist/index.js"],
+    "css": ["dist/index.css"]
+  },
+
+  "library": "AnalyticsApp",
+
+  "permissions": [
+    {
+      "id": "analytics:view",
+      "name": "View Analytics",
+      "description": "View analytics data"
+    },
+    {
+      "id": "analytics:export",
+      "name": "Export Data",
+      "description": "Export analytics data"
+    },
+    {
+      "id": "analytics:realtime",
+      "name": "Realtime Data",
+      "description": "Access realtime analytics"
+    }
+  ],
+
+  "pages": [
+    {
+      "id": "analytics-app",
+      "label": "Analytics",
+      "path": "/app/analytics",
+      "icon": "bar-chart-2",
+      "component": "Home",
+      "title": "Analytics Dashboard",
+      "order": 20,
+      "children": [
+        {
+          "id": "analytics-overview",
+          "label": "Overview",
+          "path": "/app/analytics/overview",
+          "icon": "layout-dashboard",
+          "component": "Overview",
+          "title": "Overview",
+          "permissions": ["analytics:view"]
+        },
+        {
+          "id": "analytics-reports",
+          "label": "Reports",
+          "path": "/app/analytics/reports",
+          "icon": "file-text",
+          "component": "Reports",
+          "title": "Reports",
+          "permissions": ["analytics:view"]
+        },
+        {
+          "id": "analytics-realtime",
+          "label": "Realtime",
+          "path": "/app/analytics/realtime",
+          "icon": "activity",
+          "component": "Realtime",
+          "title": "Realtime",
+          "permissions": ["analytics:realtime"]
+        }
+      ]
+    }
+  ],
+
+  "lifecycle": {
+    "bootstrap": "bootstrap",
+    "mount": "mount",
+    "unmount": "unmount"
+  }
+}
+
+

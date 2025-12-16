@@ -5,9 +5,14 @@
   "description": "A platform for app registration and menu management",
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
-    "dev:web": "pnpm --filter @nexo/web dev",
+    "dev:admin": "pnpm --filter @nexo/admin dev",
+    "dev:server": "pnpm --filter @nexo/server dev",
+    "dev:all": "concurrently \"pnpm dev:server\" \"pnpm dev:admin\"",
     "build": "pnpm -r run build",
     "lint": "pnpm -r run lint"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
   },
   "engines": {
     "node": ">=18.0.0",
@@ -15,4 +20,3 @@
   },
   "packageManager": "pnpm@9.15.0"
 }
-

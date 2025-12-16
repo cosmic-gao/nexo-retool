@@ -2,9 +2,9 @@
 export type {
   AppManifest,
   AppManifestConfig,
+  PageConfig,
   MenuItemConfig,
   RouteConfig,
-  RouteManifestConfig,
   RegisteredApp,
   AppLoader,
   AppModule,
@@ -22,14 +22,17 @@ export {
   getRegistry,
   PermissionManager,
   getPermissionManager,
-  createAppLoader,
+  // Dist app loader (for production - loading compiled apps)
+  createDistAppLoader,
+  loadAppAssets,
+  unloadAssets,
+  // Vite app loader (for development - loading source files)
   createViteAppLoader,
+  // Common functions
   registerApp,
   registerAppFromConfig,
-  registerApps,
   setIconResolver,
   transformManifest,
-  type AppLoaderConfig,
 } from "./registry";
 
 // Hooks

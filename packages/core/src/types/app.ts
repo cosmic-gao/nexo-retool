@@ -1,238 +1,198 @@
 import type { ComponentType, ReactNode } from "react";
 
 /**
- * 菜单项配置
+ * Page config - combines menu and route into one
+ * Each page defines both its menu entry and route
  */
-export interface MenuItemConfig {
-  /** 菜单唯一标识 */
+export interface PageConfig {
+  /** Unique page identifier */
   id: string;
-  /** 菜单显示名称 */
+  /** Display label in menu */
   label: string;
-  /** 菜单图标名称 (lucide-react 图标名) */
-  icon?: string;
-  /** 菜单路径 */
+  /** Route path */
   path: string;
-  /** 子菜单 */
-  children?: MenuItemConfig[];
-  /** 菜单排序权重，数字越小越靠前 */
+  /** Icon name from lucide-react */
+  icon?: string;
+  /** Component name exported from the app bundle */
+  component?: string;
+  /** Child pages (for nested menus and routes) */
+  children?: PageConfig[];
+  /** Sort order (lower = higher) */
   order?: number;
-  /** 是否隐藏 */
+  /** Hide from menu but keep route accessible */
   hidden?: boolean;
-  /** 菜单徽章 */
+  /** Badge text or number */
   badge?: string | number;
-  /** 所需权限 */
+  /** Required permissions */
   permissions?: string[];
-  /** 外部链接 */
+  /** Page title (for document title) */
+  title?: string;
+  /** Page description */
+  description?: string;
+  /** External link */
   external?: boolean;
-  /** 在新窗口打开 */
+  /** Link target */
   target?: "_blank" | "_self";
 }
 
 /**
- * 路由配置（用于 Manifest）
+ * Menu item config - derived from PageConfig for internal use
  */
-export interface RouteManifestConfig {
-  /** 路由路径 */
+export interface MenuItemConfig {
+  id: string;
+  label: string;
+  icon?: string | ReactNode;
   path: string;
-  /** 路由入口文件（相对于 APP 根目录）*/
-  entry?: string;
-  /** 路由元信息 */
-  meta?: {
-    title?: string;
-    description?: string;
-    permissions?: string[];
-  };
-  /** 子路由 */
-  children?: RouteManifestConfig[];
+  children?: MenuItemConfig[];
+  order?: number;
+  hidden?: boolean;
+  badge?: string | number;
+  permissions?: string[];
+  external?: boolean;
+  target?: "_blank" | "_self";
 }
 
 /**
- * 运行时路由配置
+ * Route config - runtime route with component
  */
 export interface RouteConfig {
-  /** 路由路径 */
   path: string;
-  /** 路由组件 */
   component: ComponentType<any>;
-  /** 路由布局 */
   layout?: ComponentType<{ children: ReactNode }>;
-  /** 路由元信息 */
   meta?: {
     title?: string;
     description?: string;
     permissions?: string[];
   };
-  /** 子路由 */
   children?: RouteConfig[];
 }
 
-/**
- * 权限配置
- */
 export interface PermissionConfig {
-  /** 权限标识 */
   id: string;
-  /** 权限名称 */
   name: string;
-  /** 权限描述 */
   description?: string;
 }
 
-/**
- * APP 资源配置
- */
 export interface AppAssets {
-  /** 入口 JS 文件 */
-  js?: string[];
-  /** CSS 文件 */
+  /** JS files to load (relative to app directory) */
+  js: string[];
+  /** CSS files to load (relative to app directory) */
   css?: string[];
 }
 
 /**
- * APP Manifest 配置文件
- * 用户 APP 通过此配置声明需要注册到平台的内容
+ * App Manifest Config - JSON format stored in manifest.json
+ * This is what user apps provide after compilation
  */
 export interface AppManifestConfig {
-  /** APP 唯一标识 */
   id: string;
-  /** APP 名称 */
   name: string;
-  /** APP 版本 */
   version: string;
-  /** APP 描述 */
   description?: string;
-  /** APP 图标 (lucide-react 图标名 或 URL) */
   icon?: string;
-  /** APP 作者 */
   author?: string;
-  /** APP 主页 */
   homepage?: string;
-  /** APP 基础路径 */
+
+  /** Base path for all app routes */
   basePath: string;
-  /** APP 入口文件 */
-  entry?: string;
-  /** APP 资源文件 */
-  assets?: AppAssets;
-  /** 菜单配置 */
-  menus?: MenuItemConfig[];
-  /** 路由配置 */
-  routes?: RouteManifestConfig[];
-  /** 权限声明 */
+
+  /** Compiled assets to load */
+  assets: AppAssets;
+
+  /** Pages - combines menus and routes into one unified structure */
+  pages?: PageConfig[];
+
+  /** Permissions defined by this app */
   permissions?: PermissionConfig[];
-  /** APP 标签 */
+
   tags?: string[];
-  /** APP 优先级 */
   priority?: number;
-  /** 框架类型 */
+
+  /** Framework used (for potential sandboxing) */
   framework?: "react" | "vue" | "vanilla";
-  /** 是否启用沙箱隔离 */
+
+  /** Whether to run in sandbox/iframe */
   sandbox?: boolean;
-  /** 生命周期钩子 */
+
+  /** Global variable name that app exports to */
+  library?: string;
+
+  /** Lifecycle hooks (function names exported by the app) */
   lifecycle?: {
+    bootstrap?: string;
     mount?: string;
     unmount?: string;
-    bootstrap?: string;
   };
 }
 
 /**
- * 运行时 APP 清单
+ * Runtime App Manifest - After loading and processing
  */
 export interface AppManifest {
-  /** APP 唯一标识 */
   id: string;
-  /** APP 名称 */
   name: string;
-  /** APP 版本 */
   version: string;
-  /** APP 描述 */
   description?: string;
-  /** APP 图标 */
   icon?: ReactNode;
-  /** APP 作者 */
   author?: string;
-  /** APP 基础路径 */
   basePath: string;
-  /** 菜单配置 */
   menus: MenuItemConfig[];
-  /** 路由配置 */
   routes: RouteConfig[];
-  /** 权限声明 */
   permissions?: PermissionConfig[];
-  /** APP 标签 */
   tags?: string[];
-  /** APP 优先级 */
   priority?: number;
-  /** 框架类型 */
   framework?: "react" | "vue" | "vanilla";
-  /** APP 初始化函数 */
-  setup?: () => Promise<void> | void;
-  /** APP 销毁函数 */
-  teardown?: () => Promise<void> | void;
-  /** 原始配置 */
+
+  /** Lifecycle functions */
+  bootstrap?: () => Promise<void> | void;
+  mount?: (container: HTMLElement) => Promise<void> | void;
+  unmount?: (container: HTMLElement) => Promise<void> | void;
+
+  /** Reference to loaded module */
+  module?: any;
+
+  /** Original config */
   _raw?: AppManifestConfig;
 }
 
-/**
- * APP 加载状态
- */
 export type AppStatus = "pending" | "loading" | "loaded" | "error" | "disabled";
 
-/**
- * 已注册的 APP 信息
- */
 export interface RegisteredApp {
-  /** APP 清单 */
   manifest: AppManifest;
-  /** 注册时间 */
   registeredAt: Date;
-  /** 是否已激活 */
   active: boolean;
-  /** 加载状态 */
   status: AppStatus;
-  /** 错误信息 */
   error?: Error;
-  /** APP 来源路径 */
-  sourcePath?: string;
-  /** APP 容器元素 */
+  /** Path to the app directory */
+  appPath?: string;
+  /** Container element for mounted app */
   container?: HTMLElement;
+  /** Loaded assets */
+  loadedAssets?: {
+    scripts: HTMLScriptElement[];
+    styles: HTMLLinkElement[];
+  };
 }
 
-/**
- * APP 加载器
- */
-export type AppLoader = () => Promise<{ default: AppManifest | AppManifestConfig } | AppManifest | AppManifestConfig>;
+export type AppLoader = () => Promise<
+  { default: AppManifest | AppManifestConfig } | AppManifest | AppManifestConfig
+>;
 
-/**
- * APP 模块定义
- */
 export interface AppModule {
   default: AppManifest | AppManifestConfig;
 }
 
-/**
- * 平台配置
- */
 export interface PlatformConfig {
-  /** 平台名称 */
   name: string;
-  /** 平台版本 */
   version: string;
-  /** 基础路径 */
   basePath?: string;
-  /** 用户 APP 目录路径 */
+  /** Base URL for user apps (e.g., "/user-apps" or "https://cdn.example.com/apps") */
   userAppsPath?: string;
-  /** 远程 APP 注册表 URL */
   remoteRegistry?: string;
-  /** 默认布局 */
   defaultLayout?: ComponentType<{ children: ReactNode }>;
-  /** 错误边界组件 */
   errorBoundary?: ComponentType<{ error: Error; children?: ReactNode }>;
 }
 
-/**
- * 用户信息
- */
 export interface UserInfo {
   id: string;
   name: string;
@@ -241,9 +201,6 @@ export interface UserInfo {
   roles: string[];
 }
 
-/**
- * 权限检查上下文
- */
 export interface PermissionContext {
   user: UserInfo | null;
   checkPermission: (permission: string) => boolean;

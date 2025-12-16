@@ -1,208 +1,200 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Nexo App Manifest",
-  "description": "Nexo 平台 APP 配置文件规范",
+  "description": "Configuration file for Nexo platform user apps",
   "type": "object",
-  "required": ["id", "name", "version"],
+  "required": ["id", "name", "version", "basePath", "assets"],
   "properties": {
     "$schema": {
       "type": "string",
-      "description": "JSON Schema 引用"
+      "description": "JSON Schema reference"
     },
     "id": {
       "type": "string",
-      "pattern": "^[a-z][a-z0-9-]*$",
-      "description": "APP 唯一标识符，小写字母、数字和连字符"
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Unique app identifier (lowercase letters, numbers, hyphens only)"
     },
     "name": {
       "type": "string",
-      "description": "APP 显示名称"
+      "description": "Display name of the app"
     },
     "version": {
       "type": "string",
       "pattern": "^\\d+\\.\\d+\\.\\d+",
-      "description": "APP 版本号，遵循语义化版本"
+      "description": "Semantic version number"
     },
     "description": {
       "type": "string",
-      "description": "APP 描述"
+      "description": "Brief description of the app"
     },
     "author": {
       "type": "string",
-      "description": "APP 作者"
+      "description": "App author name"
     },
     "icon": {
       "type": "string",
-      "description": "APP 图标，使用 Lucide 图标名称"
+      "description": "Icon name from lucide-react (kebab-case)"
+    },
+    "homepage": {
+      "type": "string",
+      "format": "uri",
+      "description": "App homepage URL"
     },
     "tags": {
       "type": "array",
       "items": { "type": "string" },
-      "description": "APP 标签"
+      "description": "Tags for categorization"
     },
     "priority": {
       "type": "number",
-      "default": 0,
-      "description": "排序优先级，数字越小越靠前"
+      "description": "Loading priority (lower = higher priority)"
     },
     "basePath": {
       "type": "string",
       "pattern": "^/",
-      "description": "APP 基础路径，必须以 / 开头"
+      "description": "Base path for all app routes (must start with /)"
     },
     "framework": {
       "type": "string",
       "enum": ["react", "vue", "vanilla"],
-      "description": "APP 使用的框架"
+      "description": "Frontend framework used"
     },
-    "entry": {
-      "type": "string",
-      "description": "APP 入口文件路径"
+    "sandbox": {
+      "type": "boolean",
+      "description": "Whether to run in sandbox/iframe"
     },
     "assets": {
       "type": "object",
+      "required": ["js"],
       "properties": {
         "js": {
           "type": "array",
           "items": { "type": "string" },
-          "description": "JavaScript 资源文件"
+          "description": "JavaScript files to load (relative to app directory)"
         },
         "css": {
           "type": "array",
           "items": { "type": "string" },
-          "description": "CSS 样式文件"
+          "description": "CSS files to load (relative to app directory)"
         }
       },
-      "description": "APP 静态资源"
+      "description": "Compiled assets to load"
+    },
+    "library": {
+      "type": "string",
+      "description": "Global variable name that app exports to (e.g., 'TodoApp')"
     },
     "permissions": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/Permission"
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Permission identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Permission description"
+          }
+        }
       },
-      "description": "APP 权限声明"
+      "description": "Permissions defined by this app"
     },
-    "menus": {
+    "pages": {
       "type": "array",
-      "items": {
-        "$ref": "#/definitions/MenuItem"
-      },
-      "description": "APP 菜单配置"
-    },
-    "routes": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/Route"
-      },
-      "description": "APP 路由配置"
+      "items": { "$ref": "#/definitions/page" },
+      "description": "Pages - unified structure for menus and routes"
     },
     "lifecycle": {
       "type": "object",
       "properties": {
         "bootstrap": {
           "type": "string",
-          "description": "初始化脚本路径"
+          "description": "Function name for app initialization"
         },
         "mount": {
           "type": "string",
-          "description": "挂载脚本路径"
+          "description": "Function name for mounting app to container"
         },
         "unmount": {
           "type": "string",
-          "description": "卸载脚本路径"
+          "description": "Function name for unmounting app"
         }
       },
-      "description": "APP 生命周期钩子"
+      "description": "Lifecycle hook function names exported by the app"
     }
   },
   "definitions": {
-    "Permission": {
+    "page": {
       "type": "object",
-      "required": ["id", "name"],
+      "required": ["id", "label", "path"],
       "properties": {
         "id": {
           "type": "string",
-          "description": "权限唯一标识"
-        },
-        "name": {
-          "type": "string",
-          "description": "权限显示名称"
-        },
-        "description": {
-          "type": "string",
-          "description": "权限描述"
-        }
-      }
-    },
-    "MenuItem": {
-      "type": "object",
-      "required": ["id", "label"],
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "菜单项唯一标识"
+          "description": "Unique page identifier"
         },
         "label": {
           "type": "string",
-          "description": "菜单项显示文本"
+          "description": "Display label in menu"
         },
         "path": {
           "type": "string",
-          "description": "菜单项路由路径"
+          "description": "Route path"
         },
         "icon": {
           "type": "string",
-          "description": "菜单项图标"
+          "description": "Icon name from lucide-react"
+        },
+        "component": {
+          "type": "string",
+          "description": "Component name exported from the app bundle"
+        },
+        "title": {
+          "type": "string",
+          "description": "Page title (for document title)"
+        },
+        "description": {
+          "type": "string",
+          "description": "Page description"
         },
         "order": {
           "type": "number",
-          "description": "排序顺序"
+          "description": "Sort order (lower = higher)"
+        },
+        "hidden": {
+          "type": "boolean",
+          "description": "Hide from menu but keep route accessible"
         },
         "badge": {
-          "type": "string",
-          "description": "菜单项徽章文本"
+          "oneOf": [{ "type": "string" }, { "type": "number" }],
+          "description": "Badge text or number"
         },
         "permissions": {
           "type": "array",
           "items": { "type": "string" },
-          "description": "访问该菜单需要的权限"
+          "description": "Required permissions"
+        },
+        "external": {
+          "type": "boolean",
+          "description": "Whether this is an external link"
+        },
+        "target": {
+          "type": "string",
+          "enum": ["_blank", "_self"],
+          "description": "Link target"
         },
         "children": {
           "type": "array",
-          "items": { "$ref": "#/definitions/MenuItem" },
-          "description": "子菜单项"
-        }
-      }
-    },
-    "Route": {
-      "type": "object",
-      "required": ["path"],
-      "properties": {
-        "path": {
-          "type": "string",
-          "description": "路由路径"
-        },
-        "entry": {
-          "type": "string",
-          "description": "路由组件入口文件"
-        },
-        "meta": {
-          "type": "object",
-          "properties": {
-            "title": {
-              "type": "string",
-              "description": "页面标题"
-            },
-            "permissions": {
-              "type": "array",
-              "items": { "type": "string" },
-              "description": "访问该路由需要的权限"
-            }
-          },
-          "description": "路由元信息"
+          "items": { "$ref": "#/definitions/page" },
+          "description": "Child pages"
         }
       }
     }
   }
 }
-

@@ -8,9 +8,6 @@ import type {
   UserInfo,
 } from "../types/app";
 
-/**
- * 使用注册中心的 Hook
- */
 export function useRegistry() {
   const registry = getRegistry();
   const permissionManager = getPermissionManager();
@@ -106,25 +103,16 @@ export function useRegistry() {
   };
 }
 
-/**
- * 获取当前激活的菜单（带权限过滤）
- */
 export function useMenus(): MenuItemConfig[] {
   const { menus } = useRegistry();
   return menus;
 }
 
-/**
- * 获取当前激活的路由（带权限过滤）
- */
 export function useRoutes(): RouteConfig[] {
   const { routes } = useRegistry();
   return routes;
 }
 
-/**
- * 使用权限
- */
 export function usePermission() {
   const permissionManager = getPermissionManager();
   const [user, setUser] = useState<UserInfo | null>(permissionManager.getUser());
