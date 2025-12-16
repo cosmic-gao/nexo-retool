@@ -14,9 +14,6 @@ importers:
 
   apps/admin:
     dependencies:
-      '@nexoc/core':
-        specifier: workspace:*
-        version: link:../../packages/core
       '@radix-ui/react-avatar':
         specifier: ^1.1.11
         version: 1.1.11(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -47,6 +44,9 @@ importers:
       lucide-react:
         specifier: ^0.511.0
         version: 0.511.0(react@19.2.3)
+      nexoc-core:
+        specifier: workspace:*
+        version: link:../../packages/core
       react:
         specifier: ^19.1.0
         version: 19.2.3
@@ -168,6 +168,9 @@ importers:
       '@types/react':
         specifier: ^19.1.6
         version: 19.2.7
+      '@types/react-dom':
+        specifier: ^19.1.5
+        version: 19.2.3(@types/react@19.2.7)
       react:
         specifier: ^19.1.0
         version: 19.2.3
@@ -223,7 +226,7 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.19)
     optionalDependencies:
-      '@nexoc/core':
+      nexoc-core:
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -260,15 +263,15 @@ importers:
 
   templates/react:
     dependencies:
-      '@nexoc/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@nexoc/react-runtime':
-        specifier: workspace:*
-        version: link:../../packages/react-runtime
       lucide-react:
         specifier: ^0.513.0
         version: 0.513.0(react@19.2.3)
+      nexoc-core:
+        specifier: workspace:*
+        version: link:../../packages/core
+      nexoc-react-runtime:
+        specifier: workspace:*
+        version: link:../../packages/react-runtime
       react:
         specifier: ^19.1.0
         version: 19.2.3
