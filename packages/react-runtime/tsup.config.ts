@@ -1,11 +1,28 @@
 import { defineConfig } from "tsup";
 
-export default defineConfig({
-  entry: ["src/index.ts"],
-  format: ["esm"],
-  dts: true,
-  clean: true,
-  external: ["react", "react-dom", "react-router-dom", "@nexo/core"],
-  treeshake: true,
-});
-
+export default defineConfig([
+  // Main library entry
+  {
+    entry: ["src/index.ts"],
+    format: ["esm"],
+    dts: true,
+    clean: true,
+    external: ["react", "react-dom", "react-router-dom", "@nexo/core"],
+    treeshake: true,
+    outDir: "dist",
+  },
+  // CLI entry
+  {
+    entry: { "cli/index": "src/cli/index.ts" },
+    format: ["esm"],
+    dts: false,
+    clean: false,
+    external: ["react", "react-dom", "react-router-dom", "@nexo/core", "vite", "@vitejs/plugin-react"],
+    treeshake: true,
+    outDir: "dist",
+    shims: true,
+    banner: {
+      js: "#!/usr/bin/env node",
+    },
+  },
+]);

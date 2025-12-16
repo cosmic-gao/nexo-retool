@@ -1,25 +1,44 @@
 {
   "name": "@nexo/react-runtime",
   "version": "1.0.0",
-  "private": true,
+  "description": "React runtime for Nexo platform - provides bootstrap, UI components, and CLI tools",
   "type": "module",
-  "main": "./src/index.ts",
-  "module": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "bin": {
-    "nexo-react": "./src/cli/index.ts"
+    "nexo-react": "./dist/cli/index.js"
   },
   "exports": {
     ".": {
-      "import": "./src/index.ts",
-      "types": "./src/index.ts"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
-    "./styles.css": "./src/styles/globals.css"
+    "./styles.css": "./dist/styles/globals.css"
   },
+  "files": [
+    "dist",
+    "src/styles/globals.css"
+  ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && pnpm copy-styles",
+    "copy-styles": "node -e \"require('fs').cpSync('src/styles', 'dist/styles', {recursive: true})\"",
     "dev": "tsup --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm build"
+  },
+  "keywords": [
+    "nexo",
+    "react",
+    "runtime",
+    "micro-frontend",
+    "vite"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.11",
@@ -38,6 +57,7 @@
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.1.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.0.0",
@@ -47,9 +67,11 @@
     "vite": "^6.3.5"
   },
   "peerDependencies": {
-    "@nexo/core": "workspace:*",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
     "react-router-dom": "^6.0.0 || ^7.0.0"
+  },
+  "optionalDependencies": {
+    "@nexo/core": "workspace:*"
   }
 }

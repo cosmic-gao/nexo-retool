@@ -1,7 +1,5 @@
-#!/usr/bin/env node
-
 import { spawn } from "child_process";
-import { writeFileSync, readFileSync, mkdirSync, existsSync, rmSync } from "fs";
+import { writeFileSync, readFileSync, mkdirSync, existsSync, rmSync, readdirSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -49,8 +47,10 @@ function generateIndexHtml(manifest: Manifest, cwd: string): string {
 
 function generateMainTsx(cwd: string): string {
   const cwdPosix = cwd.replace(/\\/g, "/");
+  // Use absolute path for styles.css since we're in node_modules/.nexo-cache
+  const stylesPath = `${cwdPosix}/node_modules/@nexo/react-runtime/dist/styles/globals.css`;
   return `import { bootstrap } from "@nexo/react-runtime";
-import "@nexo/react-runtime/styles.css";
+import "${stylesPath}";
 import { type AppManifestConfig } from "@nexo/core";
 import * as pages from "${cwdPosix}/pages";
 import manifestJson from "${cwdPosix}/manifest.json";
@@ -174,16 +174,29 @@ function generatePostcssConfig(cacheDir: string): string {
 `;
 }
 
+function cleanCacheDir(cacheDir: string) {
+  if (existsSync(cacheDir)) {
+    try {
+      rmSync(cacheDir, { recursive: true, force: true });
+    } catch (err) {
+      // If we can't remove, try to just overwrite files
+      console.warn("Warning: Could not clean cache directory, will overwrite files");
+    }
+  }
+}
+
 function setupCacheDir(cwd: string, manifest: Manifest): string {
   const cacheDir = resolve(cwd, "node_modules", ".nexo-cache");
   
-  // Clean and create cache directory
-  if (existsSync(cacheDir)) {
-    rmSync(cacheDir, { recursive: true });
+  // Try to clean cache directory
+  cleanCacheDir(cacheDir);
+  
+  // Create cache directory
+  if (!existsSync(cacheDir)) {
+    mkdirSync(cacheDir, { recursive: true });
   }
-  mkdirSync(cacheDir, { recursive: true });
 
-  // Generate files
+  // Generate files (overwrite if they exist)
   writeFileSync(resolve(cacheDir, "index.html"), generateIndexHtml(manifest, cwd));
   writeFileSync(resolve(cacheDir, "main.tsx"), generateMainTsx(cwd));
   writeFileSync(resolve(cacheDir, "vite.config.ts"), generateViteConfig(manifest, cwd, cacheDir));
